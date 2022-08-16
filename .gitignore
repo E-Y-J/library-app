@@ -2,4 +2,4 @@
 .classpath
 .project
 
-**/application.properties
+*.properties
