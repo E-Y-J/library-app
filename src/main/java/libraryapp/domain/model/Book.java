@@ -2,7 +2,10 @@ package libraryapp.domain.model;
 
 import java.sql.Date;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -27,32 +30,30 @@ public class Book {
 	private String author;
 	
 	@Column(name = "date_published")
-	private Date date_published;
+	private Date datePublished;
 	
 	@Column(name = "category")
 	private String category;
 	
-	@Column(name = "isbn10")
-	private String isbn10;
+	@Embedded
+	@AttributeOverrides({
+		@AttributeOverride(name = "isbn10", column = @Column(name = "isbn10")),
+		@AttributeOverride(name = "isbn13", column = @Column(name = "isbn13"))
+	})
+	private Isbn isbn;
 	
-	@Column(name = "isbn13")
-	private String isbn13;
-	
-	protected Book() {}
+	protected Book() {/*required by JPA specifications*/}
 
-	public Book(String title, String author, Date date_published, String category, String isbn10,
-			String isbn13) {
-		super();
+	public Book(String title, String author, Date datePublished, String category, Isbn isbn) {
 		this.title = title;
 		this.author = author;
-		this.date_published = date_published;
+		this.datePublished = datePublished;
 		this.category = category;
-		this.isbn10 = isbn10;
-		this.isbn13 = isbn13;
+		this.isbn = isbn;
 	}
 
 	public Long getId() {
-		return id;
+		return this.id;
 	}
 
 	public void setId(Long id) {
@@ -60,7 +61,7 @@ public class Book {
 	}
 
 	public String getTitle() {
-		return title;
+		return this.title;
 	}
 
 	public void setTitle(String title) {
@@ -68,43 +69,35 @@ public class Book {
 	}
 
 	public String getAuthor() {
-		return author;
+		return this.author;
 	}
 
 	public void setAuthor(String author) {
 		this.author = author;
 	}
 
-	public Date getDate_published() {
-		return date_published;
+	public Date getDatePublished() {
+		return this.datePublished;
 	}
 
-	public void setDate_published(Date date_published) {
-		this.date_published = date_published;
+	public void setDatePublished(Date datePublished) {
+		this.datePublished = datePublished;
 	}
 
 	public String getCategory() {
-		return category;
+		return this.category;
 	}
 
 	public void setCategory(String category) {
 		this.category = category;
 	}
 
-	public String getIsbn10() {
-		return isbn10;
+	public Isbn getIsbn() {
+		return this.isbn;
 	}
 
-	public void setIsbn10(String isbn10) {
-		this.isbn10 = isbn10;
-	}
-
-	public String getIsbn13() {
-		return isbn13;
-	}
-
-	public void setIsbn13(String isbn13) {
-		this.isbn13 = isbn13;
+	public void setIsbn(Isbn isbn) {
+		this.isbn = isbn;
 	}
 
 	@Override
@@ -134,8 +127,8 @@ public class Book {
 
 	@Override
 	public String toString() {
-		return "Book [id=" + id + ", title=" + title + ", author=" + author + ", date_published=" + date_published
-				+ ", category=" + category + ", isbn10=" + isbn10 + ", isbn13=" + isbn13 + "]";
+		return "Book [id=" + id + ", title=" + title + ", author=" + author + ", date_published=" + datePublished
+				+ ", category=" + category + ", isbn=" + isbn + "]";
 	}
 	
 }

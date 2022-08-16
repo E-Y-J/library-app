@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -24,7 +25,7 @@ public class BookCopy {
 	@Column(name = "barcode")
 	private String barcode;
 
-	protected BookCopy() {}
+	protected BookCopy() {/*required by JPA specifications*/}
 	
 	public BookCopy(Long book_id, String barcode) {
 		super();
@@ -33,7 +34,7 @@ public class BookCopy {
 	}
 
 	public Long getId() {
-		return id;
+		return this.id;
 	}
 
 	public void setId(Long id) {
@@ -41,7 +42,7 @@ public class BookCopy {
 	}
 
 	public Long getBook_id() {
-		return book_id;
+		return this.book_id;
 	}
 
 	public void setBook_id(Long book_id) {
@@ -49,7 +50,7 @@ public class BookCopy {
 	}
 
 	public String getBarcode() {
-		return barcode;
+		return this.barcode;
 	}
 
 	public void setBarcode(String barcode) {

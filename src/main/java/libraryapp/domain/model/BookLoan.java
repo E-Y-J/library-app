@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -21,55 +22,64 @@ public class BookLoan {
 	private Long id;
 	
 	@Column(name = "member_id")
-	private Long member_id;
+	private Long memberId;
 	
 	@Column(name = "book_copy_id")
-	private Long book_copy_id;
+	private Long bookCopyId;
 	
 	@Column(name = "borrow_date")
-	private Date borrow_date;
+	private Date borrowDate;
 
 	@Column(name = "due_date")
-	private Date due_date;
+	private Date dueDate;
+	
+	protected BookLoan() {/*required by JPA specifications*/}
+
+	public BookLoan(Long memberId, Long bookCopyId, Date borrowDate, Date dueDate) {
+		this.memberId = memberId;
+		this.bookCopyId = bookCopyId;
+		this.borrowDate = borrowDate;
+		this.dueDate = dueDate;
+	}
 
 	public Long getId() {
-		return id;
+		return this.id;
 	}
 
 	public void setId(Long id) {
 		this.id = id;
 	}
 
-	public Long getMember_id() {
-		return member_id;
+	public Long getMemberId() {
+		return this.memberId;
 	}
 
-	public void setMember_id(Long member_id) {
-		this.member_id = member_id;
+	public void setMemberId(Long memberId) {
+		this.memberId = memberId;
 	}
 
-	public Long getBook_copy_id() {
-		return book_copy_id;
+	public Long getBookCopyId() {
+		return this.bookCopyId;
 	}
 
-	public void setBook_copy_id(Long book_copy_id) {
-		this.book_copy_id = book_copy_id;
+	public void setBookCopyId(Long bookCopyId) {
+		this.bookCopyId = bookCopyId;
 	}
 
-	public Date getBorrow_date() {
-		return borrow_date;
+	public Date getBorrowDate() {
+		return this.borrowDate;
 	}
 
-	public void setBorrow_date(Date borrow_date) {
-		this.borrow_date = borrow_date;
+	public void setBorrowDate(Date borrowDate) {
+		this.borrowDate = borrowDate;
 	}
 
-	public Date getDue_date() {
-		return due_date;
+	public Date getDueDate() {
+		return this.dueDate;
 	}
 
-	public void setDue_date(Date due_date) {
-		this.due_date = due_date;
+	public void setDueDate(Date dueDate) {
+		this.dueDate = dueDate;
 	}
 
 	@Override
@@ -99,8 +109,8 @@ public class BookLoan {
 
 	@Override
 	public String toString() {
-		return "BookLoan [id=" + id + ", member_id=" + member_id + ", book_copy_id=" + book_copy_id + ", borrow_date="
-				+ borrow_date + ", due_date=" + due_date + "]";
+		return "BookLoan [id=" + id + ", member_id=" + memberId + ", book_copy_id=" + bookCopyId + ", borrow_date="
+				+ borrowDate + ", due_date=" + dueDate + "]";
 	}
 	
 }

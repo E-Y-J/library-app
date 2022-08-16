@@ -21,56 +21,55 @@ public class MemberAccount {
 	private Long id;
 	
 	@Column(name = "library_id")
-	private String library_id;
+	private String libraryId;
 	
 	@Column(name = "name")
 	private String name;
 	
-	@Enumerated(EnumType.STRING)
 	@Column(name = "category")
-	private MemberCategory category;
+	private Long category;
 
-	protected MemberAccount() {}
+	protected MemberAccount() {/*required by JPA specifications*/}
 	
-	public MemberAccount(String library_id, String name, MemberCategory category) {
+	public MemberAccount(String libraryId, String name, Long category) {
 		super();
-		this.library_id = library_id;
+		this.libraryId = libraryId;
 		this.name = name;
 		this.category = category;
 	}
-
+	
 	public Long getId() {
-		return id;
+		return this.id;
 	}
 
 	public void setId(Long id) {
 		this.id = id;
 	}
 
-	public String getLibrary_id() {
-		return library_id;
+	public String getLibraryId() {
+		return this.libraryId;
 	}
 
-	public void setLibrary_id(String library_id) {
-		this.library_id = library_id;
+	public void setLibraryId(String libraryId) {
+		this.libraryId = libraryId;
 	}
 
 	public String getName() {
-		return name;
+		return this.name;
 	}
 
 	public void setName(String name) {
 		this.name = name;
 	}
 
-	public MemberCategory getCategory() {
-		return category;
+	public Long getCategory() {
+		return this.category;
 	}
 
-	public void setCategory(MemberCategory category) {
+	public void setCategory(Long category) {
 		this.category = category;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -98,7 +97,7 @@ public class MemberAccount {
 
 	@Override
 	public String toString() {
-		return "MemberAccount [id=" + id + ", library_id=" + library_id + ", name=" + name + ", category=" + category
+		return "MemberAccount [id=" + id + ", library_id=" + libraryId + ", name=" + name + ", category=" + category
 				+ "]";
 	}
 	

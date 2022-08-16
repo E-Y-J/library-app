@@ -10,6 +10,9 @@ public interface BookRepository extends Repository<Book, Long> {
 
 	@Query("FROM Book a WHERE a.id = :id")
 	Book findById(@Param("id") long id);
+	
+	@Query("FROM Book a WHERE a.title = :title")
+	Book findByTitle(@Param("title") String title);
 
 	List<Book> findAll();
 	

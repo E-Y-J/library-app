@@ -20,55 +20,53 @@ public class LoanPeriod {
 	@SequenceGenerator(name = "loan_period_sequence", sequenceName = "loan_period_sequence", allocationSize = 1)
 	private Long id;
 	
-	@Enumerated(EnumType.STRING)
 	@Column(name = "member_category")
-	private MemberCategory member_category;
+	private Long memberCategory;
 	
 	@Column(name = "book_category")
-	private String book_category;
+	private String bookCategory;
 	
 	@Column(name = "number_of_days")
-	private Integer number_of_days;
+	private Integer numberOfDays;
 
-	protected LoanPeriod() {}
+	protected LoanPeriod() {/*required by JPA specifications*/}
 
-	public LoanPeriod(MemberCategory member_category, String book_category, Integer number_of_days) {
-		super();
-		this.member_category = member_category;
-		this.book_category = book_category;
-		this.number_of_days = number_of_days;
+	public LoanPeriod(Long memberCategory, String bookCategory, Integer numberOfDays) {
+		this.memberCategory = memberCategory;
+		this.bookCategory = bookCategory;
+		this.numberOfDays = numberOfDays;
 	}
 
 	public Long getId() {
-		return id;
+		return this.id;
 	}
 
 	public void setId(Long id) {
 		this.id = id;
 	}
 
-	public MemberCategory getMember_category() {
-		return member_category;
+	public Long getMemberCategory() {
+		return this.memberCategory;
 	}
 
-	public void setMember_category(MemberCategory member_category) {
-		this.member_category = member_category;
+	public void setMemberCategory(Long memberCategory) {
+		this.memberCategory = memberCategory;
 	}
 
-	public String getBook_category() {
-		return book_category;
+	public String getBookCategory() {
+		return this.bookCategory;
 	}
 
-	public void setBook_category(String book_category) {
-		this.book_category = book_category;
+	public void setBookCategory(String bookCategory) {
+		this.bookCategory = bookCategory;
 	}
 
-	public Integer getNumber_of_days() {
-		return number_of_days;
+	public Integer getNumberOfDays() {
+		return this.numberOfDays;
 	}
 
-	public void setNumber_of_days(Integer number_of_days) {
-		this.number_of_days = number_of_days;
+	public void setNumberOfDays(Integer numberOfDays) {
+		this.numberOfDays = numberOfDays;
 	}
 
 	@Override
@@ -98,8 +96,8 @@ public class LoanPeriod {
 
 	@Override
 	public String toString() {
-		return "LoanPeriod [id=" + id + ", member_category=" + member_category + ", book_category=" + book_category
-				+ ", number_of_days=" + number_of_days + "]";
+		return "LoanPeriod [id=" + id + ", member_category=" + memberCategory + ", book_category=" + bookCategory
+				+ ", number_of_days=" + numberOfDays + "]";
 	}
 	
 }

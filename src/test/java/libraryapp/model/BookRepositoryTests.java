@@ -13,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import libraryapp.domain.model.Book;
 import libraryapp.domain.model.BookRepository;
+import libraryapp.domain.model.Isbn;
 
 @DataJpaTest
 public class BookRepositoryTests {
@@ -21,28 +22,35 @@ public class BookRepositoryTests {
 	private BookRepository bookRepository;
 	
 	@Test
-	void testFindOneBook() throws Exception {
+	void FindOneBookById() throws Exception {
 		Book book  = bookRepository.findById(1L);
 		System.out.println(book);
 		assertNotNull(book, "404 Book not found");
 	}
 	
 	@Test
-	void testFindAllBooks() throws Exception {
+	void FindOneBookByTitle() throws Exception {
+		Book book  = bookRepository.findByTitle("The Affair");
+		System.out.println(book);
+		assertNotNull(book, "404 Book not found");
+	}
+	
+	@Test
+	void FindAllBooks() throws Exception {
 		List<Book> books  = bookRepository.findAll();
 		System.out.println(books);
 		assertNotEquals(books.size(), 0, "Empty SQL");
 	}
 	
 	@Test
-	void testSaveBooks() throws Exception {
+	void SaveBooks() throws Exception {
 		Book book = new Book(
 				"A Wanted Man", 
 				"Lee Child", 
 				java.sql.Date.valueOf(LocalDate.of(2012, 8, 1)), 
 				"Novel", 
-				"037369606X", 
-				"9780373696062");
+				new Isbn("037369606X", "9780373696062")
+				);
 		bookRepository.save(book);
 		Book findBook  = bookRepository.findById(4L);
 		System.out.println(findBook);
