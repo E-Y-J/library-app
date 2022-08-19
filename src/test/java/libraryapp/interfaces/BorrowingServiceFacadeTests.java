@@ -1,19 +1,22 @@
 package libraryapp.interfaces;
 
-import static org.hamcrest.Matchers.*;
-import static org.hamcrest.MatcherAssert.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
+
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
-import javax.persistence.TypedQuery;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,12 +35,15 @@ import libraryapp.domain.model.LoanPeriod;
 import libraryapp.domain.model.MemberAccount;
 import libraryapp.domain.model.MemberCategory;
 
+import static libraryapp.utils.DateUtils.today;
+import static libraryapp.utils.DateUtils.todayPlus;
+import static libraryapp.utils.DateUtils.todayAsCalendar;
+
 @SpringBootTest
 @DirtiesContext(classMode=ClassMode.AFTER_EACH_TEST_METHOD)
 @Rollback
 @ActiveProfiles("test")
 public class BorrowingServiceFacadeTests {
-
 	@Autowired
 	protected BorrowingServiceFacade service;
 
@@ -50,14 +56,14 @@ public class BorrowingServiceFacadeTests {
 	protected String patAccountId; // graduate student
 
 	@BeforeEach
-	void setUp() throws Exception {
+	void setUp() {
 		assertNotNull(
 				service, "Please provide a service implementation");
 		entityManager = entityManagerFactory.createEntityManager();
 		entityManager.getTransaction().begin();
 		try {
 			setUpBooksAndCopies();
-			//setUpMemberCategories();
+			setUpMemberCategories();
 			setUpLoanPeriods();
 			setUpMemberAccounts();
 			entityManager.getTransaction().commit();
@@ -87,18 +93,18 @@ public class BorrowingServiceFacadeTests {
 		 * category: Novel
 		 * copies: 9781409011446-1, 9781409011446-2
 		 */
-		Book the_affair = new Book(
+		Book theAffair = new Book(
 				"The Affair", 
 				"Lee Child", 
 				java.sql.Date.valueOf(LocalDate.of(2011, 9, 1)), 
 				"Novel", 
 				new Isbn("1409011445", "9781409011446"));
-		BookCopy the_affair_1 = new BookCopy(1L, "9781409011446-1");
-		BookCopy the_affair_2 = new BookCopy(1L, "9781409011446-2");
+		BookCopy theAffair1 = new BookCopy(1L, "9781409011446-1");
+		BookCopy theAffair2 = new BookCopy(1L, "9781409011446-2");
 		
-		entityManager.persist(the_affair);
-		entityManager.persist(the_affair_1);
-		entityManager.persist(the_affair_2);
+		entityManager.persist(theAffair);
+		entityManager.persist(theAffair1);
+		entityManager.persist(theAffair2);
 		
 		/*
 		 * title: A Wanted Man
@@ -109,16 +115,16 @@ public class BorrowingServiceFacadeTests {
 		 * category: Novel
 		 * copies: 9780373696062-1
 		 */
-		Book a_wanted_man = new Book(
+		Book aWantedMan = new Book(
 				"A Wanted Man", 
 				"Lee Child", 
 				java.sql.Date.valueOf(LocalDate.of(2012, 8, 1)), 
 				"Novel", 
 				new Isbn("037369606X", "9780373696062"));
-		BookCopy a_wanted_man_1 = new BookCopy(2L, "9780373696062-1");
+		BookCopy aWantedMan1 = new BookCopy(2L, "9780373696062-1");
 		
-		entityManager.persist(a_wanted_man);
-		entityManager.persist(a_wanted_man_1);
+		entityManager.persist(aWantedMan);
+		entityManager.persist(aWantedMan1);
 		/*
 		 * title: Inferno
 		 * author: Dan Brown
@@ -128,18 +134,18 @@ public class BorrowingServiceFacadeTests {
 		 * category: Novel
 		 * copies: 9780593075005-1, 9780593075005-2
 		 */
-		Book Inferno = new Book(
+		Book inferno = new Book(
 				"Inferno", 
 				"Dan Brown", 
 				java.sql.Date.valueOf(LocalDate.of(2013, 5, 1)), 
 				"Novel", 
 				new Isbn("0593075005", "9780593075005"));
-		BookCopy Inferno_1 = new BookCopy(3L, "9780593075005-1");
-		BookCopy Inferno_2 = new BookCopy(3L, "9780593075005-2");
+		BookCopy inferno1 = new BookCopy(3L, "9780593075005-1");
+		BookCopy inferno2 = new BookCopy(3L, "9780593075005-2");
 		
-		entityManager.persist(Inferno);
-		entityManager.persist(Inferno_1);
-		entityManager.persist(Inferno_2);
+		entityManager.persist(inferno);
+		entityManager.persist(inferno1);
+		entityManager.persist(inferno2);
 		/*
 		 * title: The Lost Symbol
 		 * author: Dan Brown
@@ -149,18 +155,18 @@ public class BorrowingServiceFacadeTests {
 		 * category: Novel
 		 * copies: 9780552170024-1, 9780552170024-2
 		 */
-		Book the_lost_symbol = new Book(
+		Book theLostSymbol = new Book(
 				"The Lost Symbol", 
 				"Dan Brown", 
 				java.sql.Date.valueOf(LocalDate.of(2009, 7, 1)), 
 				"Novel", 
 				new Isbn("055217002X", "9780552170024"));
-		BookCopy the_lost_symbol_1 = new BookCopy(4L, "9780552170024-1");
-		BookCopy the_lost_symbol_2 = new BookCopy(4L, "9780552170024-2");
+		BookCopy theLostSymbol1 = new BookCopy(4L, "9780552170024-1");
+		BookCopy theLostSymbol2 = new BookCopy(4L, "9780552170024-2");
 		
-		entityManager.persist(the_lost_symbol);
-		entityManager.persist(the_lost_symbol_1);
-		entityManager.persist(the_lost_symbol_2);
+		entityManager.persist(theLostSymbol);
+		entityManager.persist(theLostSymbol1);
+		entityManager.persist(theLostSymbol2);
 		/*
 		 * title: Diary of a Wimpy Kid
 		 * author: Jeff Kinney
@@ -170,18 +176,18 @@ public class BorrowingServiceFacadeTests {
 		 * category: Comedy
 		 * copies: 9780141324906-1, 9780141324906-2
 		 */
-		Book diary_of_a_wimpy_kid = new Book(
+		Book diaryOfAWimpyKid = new Book(
 				"Diary of a Wimpy Kid", 
 				"Jeff Kinney", 
 				java.sql.Date.valueOf(LocalDate.of(2007, 4, 1)), 
 				"Comedy", 
 				new Isbn("0141324902", "9780141324906"));
-		BookCopy diary_of_a_wimpy_kid_1 = new BookCopy(5L, "9780141324906-1");
-		BookCopy diary_of_a_wimpy_kid_2 = new BookCopy(5L, "9780141324906-2");
+		BookCopy diaryOfAWimpyKid1 = new BookCopy(5L, "9780141324906-1");
+		BookCopy diaryOfAWimpyKid2 = new BookCopy(5L, "9780141324906-2");
 		
-		entityManager.persist(diary_of_a_wimpy_kid);
-		entityManager.persist(diary_of_a_wimpy_kid_1);
-		entityManager.persist(diary_of_a_wimpy_kid_2);
+		entityManager.persist(diaryOfAWimpyKid);
+		entityManager.persist(diaryOfAWimpyKid1);
+		entityManager.persist(diaryOfAWimpyKid2);
 		/*
 		 * title: Advanced Grammar in Use
 		 * author: Martin Hewings
@@ -190,16 +196,16 @@ public class BorrowingServiceFacadeTests {
 		 * category: Reference
 		 * copies: 9783125341470-1
 		 */
-		Book advanced_grammar_in_use = new Book(
+		Book advancedGrammarInUse = new Book(
 				"Advanced Grammar in Use", 
 				"Martin Hewings", 
-				java.sql.Date.valueOf(LocalDate.of(2005, 1, 1)), 
+				java.sql.Date.valueOf(LocalDate.of(2005, 1, 1)),
 				"Reference", 
 				new Isbn("3125341477", "9783125341470"));
-		BookCopy advanced_grammar_in_use_1 = new BookCopy(6L, "9783125341470-1");
+		BookCopy advancedGrammarInUse1 = new BookCopy(6L, "9783125341470-1");
 		
-		entityManager.persist(advanced_grammar_in_use);
-		entityManager.persist(advanced_grammar_in_use_1);
+		entityManager.persist(advancedGrammarInUse);
+		entityManager.persist(advancedGrammarInUse1);
 	}
 
 	protected void setUpMemberCategories() {
@@ -211,10 +217,10 @@ public class BorrowingServiceFacadeTests {
 		 */
 		// An entityManager field has already been defined in the base class.
 		// So, you can use it here.
-		MemberCategory undergradBookRestriction = new MemberCategory("undergraduate", 3L);
-		MemberCategory gradBookRestriction = new MemberCategory("graduate", 3L);
-		MemberCategory depHeadBookRestriction = new MemberCategory("department head", 3L);
-		MemberCategory profBookRestriction = new MemberCategory("professor", 3L);
+		MemberCategory undergradBookRestriction = new MemberCategory(MemberCategory.Category.UNDERGRADUATE, 3);
+		MemberCategory gradBookRestriction = new MemberCategory(MemberCategory.Category.GRADUATE, 2);
+		MemberCategory depHeadBookRestriction = new MemberCategory(MemberCategory.Category.DEPARTMENT_HEAD, 50);
+		MemberCategory profBookRestriction = new MemberCategory(MemberCategory.Category.PROFESSOR, 10);
 		
 		entityManager.persist(undergradBookRestriction);
 		entityManager.persist(gradBookRestriction);
@@ -282,32 +288,11 @@ public class BorrowingServiceFacadeTests {
 	}
 
 	@AfterEach
-	void tearDown() throws Exception {
+	void tearDown() {
 	}
 
-	protected Calendar todayAsCalendar() {
-		Calendar now = Calendar.getInstance();
-		now.set(Calendar.HOUR_OF_DAY, 0);
-		now.clear(Calendar.MINUTE);
-		now.clear(Calendar.SECOND);
-		now.clear(Calendar.MILLISECOND);
-		return now;
-	}
-
-	protected Date today() {
-		Calendar now = todayAsCalendar();
-		return now.getTime();
-	}
-
-	protected Date todayPlus(int days) {
-		Calendar now = todayAsCalendar();
-		now.add(Calendar.DATE, days);
-		return now.getTime();
-	}
-	
-	
 	@Test
-	void borrowBookCopyAndReturn() throws Exception {
+	void borrowBookCopyAndReturn() {
 		String barcode = "9780593075005-1"; // Inferno by Dan Brown
 
 		// TODO Comment out line below and make test pass
@@ -319,6 +304,7 @@ public class BorrowingServiceFacadeTests {
 		assertEquals(
 				todayPlus(10), receipt.getDueDate(),
 				"Sally (an undergraduate student) can borrow novels for up to 10 days");
+
 		Collection<BookLoanStatus> bookLoans = service.getBookLoanStatus(sallyAccountId);
 		assertEquals(
 				1, bookLoans.size(),
@@ -332,7 +318,7 @@ public class BorrowingServiceFacadeTests {
 	}
 	
 	@Test
-	void borrowBookCopiesWithDifferentLoanPeriods() throws Exception {
+	void borrowBookCopiesWithDifferentLoanPeriods() {
 		// TODO Comment out line below and make test pass
 		// fail("Not yet implemented");
 		String barcodeNovel = "9780593075005-1"; // Inferno by Dan Brown
@@ -349,7 +335,7 @@ public class BorrowingServiceFacadeTests {
 	}
 
 	@Test
-	void cannotBorrowBeyondLimit() throws Exception {
+	void cannotBorrowBeyondLimit() {
 		// TODO Comment out line below and make test pass
 		// fail("Not yet implemented");
 		// Given a graduate student (Pat) account
@@ -374,7 +360,7 @@ public class BorrowingServiceFacadeTests {
 	}
 
 	@Test
-	void cannotBorrowAlreadyBorrowedBook() throws Exception {
+	void cannotBorrowAlreadyBorrowedBook() {
 		// TODO Comment out line below and make test pass
 		// fail("Not yet implemented");
 		String barcode = "9780552170024-1"; // The Lost Symbol by Dan Brown
@@ -388,7 +374,7 @@ public class BorrowingServiceFacadeTests {
 	}
 
 	@Test
-	void cannotBorrowCertainBookCategories() throws Exception {
+	void cannotBorrowCertainBookCategories() {
 		// TODO Comment out line below and make test pass
 		// fail("Not yet implemented");
 		// Department head (John) cannot borrow novels
@@ -461,7 +447,7 @@ public class BorrowingServiceFacadeTests {
 	}
 
 	@Test
-	void reserveBook() throws Exception {
+	void reserveBook() {
 		String isbn13 = "9783125341470"; // Advanced Grammar in Use by Martin Hewings
 		String barcode = "9783125341470-1";
 
@@ -505,7 +491,7 @@ public class BorrowingServiceFacadeTests {
 	}
 
 	@Test
-	public void bookReservationsAreFirstComeFirstServed() throws Exception {
+	public void bookReservationsAreFirstComeFirstServed() {
 		String isbn13 = "9783125341470"; // Advanced Grammar in Use by Martin Hewings
 		String barcode = "9783125341470-1";
 
@@ -552,7 +538,7 @@ public class BorrowingServiceFacadeTests {
 	}
 
 	@Test
-	public void cannotReserveSameBookMoreThanOnce() throws Exception {
+	public void cannotReserveSameBookMoreThanOnce() {
 		// fail("Not yet implemented");
 		String isbn13 = "9783125341470"; // Advanced Grammar in Use by Martin Hewings
 		service.reserveBook(isbn13, patAccountId);
@@ -563,5 +549,4 @@ public class BorrowingServiceFacadeTests {
 			// expected, pass!
 		}
 	}
-
 }

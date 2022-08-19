@@ -8,6 +8,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
@@ -17,33 +19,34 @@ import libraryapp.domain.model.Isbn;
 
 @DataJpaTest
 public class BookRepositoryTests {
-	
+	private static final Logger LOGGER = LoggerFactory.getLogger(BookRepositoryTests.class);
+
 	@Autowired
 	private BookRepository bookRepository;
+
+	// Every method and variables camelCase
+	// Class names as such PascalCamel
 	
 	@Test
-	void FindOneBookById() throws Exception {
+	void findOneBookById() throws Exception {
 		Book book  = bookRepository.findById(1L);
-		System.out.println(book);
 		assertNotNull(book, "404 Book not found");
 	}
 	
 	@Test
-	void FindOneBookByTitle() throws Exception {
+	void findOneBookByTitle() throws Exception {
 		Book book  = bookRepository.findByTitle("The Affair");
-		System.out.println(book);
 		assertNotNull(book, "404 Book not found");
 	}
 	
 	@Test
-	void FindAllBooks() throws Exception {
+	void findAllBooks() throws Exception {
 		List<Book> books  = bookRepository.findAll();
-		System.out.println(books);
 		assertNotEquals(books.size(), 0, "Empty SQL");
 	}
 	
 	@Test
-	void SaveBooks() throws Exception {
+	void saveBooks() throws Exception {
 		Book book = new Book(
 				"A Wanted Man", 
 				"Lee Child", 
@@ -53,7 +56,6 @@ public class BookRepositoryTests {
 				);
 		bookRepository.save(book);
 		Book findBook  = bookRepository.findById(4L);
-		System.out.println(findBook);
 		assertEquals(findBook.getTitle(), "A Wanted Man", "Book not uploaded");
 	}
 }

@@ -7,7 +7,6 @@ import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;
 
 public interface BookRepository extends Repository<Book, Long> {
-
 	@Query("FROM Book a WHERE a.id = :id")
 	Book findById(@Param("id") long id);
 	
@@ -17,5 +16,4 @@ public interface BookRepository extends Repository<Book, Long> {
 	List<Book> findAll();
 	
 	void save(Book book);
-	
 }

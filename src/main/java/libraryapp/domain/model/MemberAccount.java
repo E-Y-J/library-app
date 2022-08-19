@@ -1,43 +1,58 @@
 package libraryapp.domain.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "member_account")
 public class MemberAccount {
-
 	@Id
 	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "member_sequence")
 	@SequenceGenerator(name = "member_sequence", sequenceName = "member_sequence", allocationSize = 1)
 	private Long id;
 	
-	@Column(name = "library_id")
-	private String libraryId;
+	@Column(name = "member_id")
+	private String memberId;
 	
 	@Column(name = "name")
 	private String name;
-	
-	@Column(name = "category")
-	private Long category;
 
-	protected MemberAccount() {/*required by JPA specifications*/}
-	
-	public MemberAccount(String libraryId, String name, Long category) {
-		super();
-		this.libraryId = libraryId;
+	@ManyToOne
+	@JoinColumn(name = "category_id")
+	private MemberCategory category;
+
+	@OneToMany(cascade = CascadeType.PERSIST)
+	@JoinColumn(name = "member_id", updatable = false, insertable = false)
+	private Set<BookLoan> bookLoans = new HashSet<BookLoan>();
+
+	// Required by JPA specifications
+	protected MemberAccount() {
+	}
+
+	public MemberAccount(Long id) {
+		this.id = id;
+	}
+
+	public MemberAccount(String memberId, String name, Long categoryId) {
+		this.memberId = memberId;
 		this.name = name;
+		this.category = new MemberCategory(categoryId);
+	}
+
+	public void setCategory(MemberCategory category) {
 		this.category = category;
 	}
-	
+
+	public Set<BookLoan> getBookLoans() {
+		return bookLoans;
+	}
+
+	public void setBookLoans(Set<BookLoan> bookLoans) {
+		this.bookLoans = bookLoans;
+	}
+
 	public Long getId() {
 		return this.id;
 	}
@@ -46,12 +61,12 @@ public class MemberAccount {
 		this.id = id;
 	}
 
-	public String getLibraryId() {
-		return this.libraryId;
+	public String getMemberId() {
+		return this.memberId;
 	}
 
-	public void setLibraryId(String libraryId) {
-		this.libraryId = libraryId;
+	public void setMemberId(String memberId) {
+		this.memberId = memberId;
 	}
 
 	public String getName() {
@@ -62,12 +77,12 @@ public class MemberAccount {
 		this.name = name;
 	}
 
-	public Long getCategory() {
+	public MemberCategory getCategory() {
 		return this.category;
 	}
 
-	public void setCategory(Long category) {
-		this.category = category;
+	public void setCategory(Long categoryId) {
+		this.category = new MemberCategory(categoryId);
 	}
 
 	@Override
@@ -97,8 +112,7 @@ public class MemberAccount {
 
 	@Override
 	public String toString() {
-		return "MemberAccount [id=" + id + ", library_id=" + libraryId + ", name=" + name + ", category=" + category
+		return "MemberAccount [id=" + id + ", library_id=" + memberId + ", name=" + name + ", category=" + category
 				+ "]";
 	}
-	
 }

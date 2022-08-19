@@ -2,8 +2,6 @@ package libraryapp.domain.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -13,15 +11,14 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "loan_period")
 public class LoanPeriod {
-
 	@Id
 	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "loan_period_sequence")
 	@SequenceGenerator(name = "loan_period_sequence", sequenceName = "loan_period_sequence", allocationSize = 1)
 	private Long id;
 	
-	@Column(name = "member_category")
-	private Long memberCategory;
+	@Column(name = "member_category_id")
+	private Long memberCategoryId;
 	
 	@Column(name = "book_category")
 	private String bookCategory;
@@ -32,7 +29,7 @@ public class LoanPeriod {
 	protected LoanPeriod() {/*required by JPA specifications*/}
 
 	public LoanPeriod(Long memberCategory, String bookCategory, Integer numberOfDays) {
-		this.memberCategory = memberCategory;
+		this.memberCategoryId = memberCategory;
 		this.bookCategory = bookCategory;
 		this.numberOfDays = numberOfDays;
 	}
@@ -46,11 +43,11 @@ public class LoanPeriod {
 	}
 
 	public Long getMemberCategory() {
-		return this.memberCategory;
+		return this.memberCategoryId;
 	}
 
 	public void setMemberCategory(Long memberCategory) {
-		this.memberCategory = memberCategory;
+		this.memberCategoryId = memberCategory;
 	}
 
 	public String getBookCategory() {
@@ -96,7 +93,7 @@ public class LoanPeriod {
 
 	@Override
 	public String toString() {
-		return "LoanPeriod [id=" + id + ", member_category=" + memberCategory + ", book_category=" + bookCategory
+		return "LoanPeriod [id=" + id + ", member_category=" + memberCategoryId + ", book_category=" + bookCategory
 				+ ", number_of_days=" + numberOfDays + "]";
 	}
 	

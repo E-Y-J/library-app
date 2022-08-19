@@ -4,6 +4,8 @@ import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -13,23 +15,34 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "member_category")
 public class MemberCategory {
-	
+	public enum Category {
+		GRADUATE,
+		UNDERGRADUATE,
+		DEPARTMENT_HEAD,
+		PROFESSOR
+	}
+
 	@Id
 	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "member_category_sequence")
 	@SequenceGenerator(name = "member_category_sequence", sequenceName = "member_category_sequence", allocationSize = 1)
 	private Long id;
 	
-	@Column(name = "category")
-	private String category;
+	@Enumerated(EnumType.STRING)
+	private Category category;
 	
 	@Column(name = "number_of_books")
-	private Long numberOfBooks;
-	
-	protected MemberCategory() {/*required by JPA specifications*/}
+	private Integer numberOfBooks;
 
-	public MemberCategory(String category, Long numberOfBooks) {
-		super();
+	// required by JPA specifications
+	protected MemberCategory() {
+	}
+
+	public MemberCategory(Long id) {
+		this.id = id;
+	}
+
+	public MemberCategory(Category category, Integer numberOfBooks) {
 		this.category = category;
 		this.numberOfBooks = numberOfBooks;
 	}
@@ -42,19 +55,19 @@ public class MemberCategory {
 		this.id = id;
 	}
 
-	public String getCategory() {
+	public Category getCategory() {
 		return this.category;
 	}
 
-	public void setCategory(String category) {
+	public void setCategory(Category category) {
 		this.category = category;
 	}
 
-	public Long getNumberOfBooks() {
+	public Integer getNumberOfBooks() {
 		return this.numberOfBooks;
 	}
 
-	public void setNumberOfBooks(Long numberOfBooks) {
+	public void setNumberOfBooks(Integer numberOfBooks) {
 		this.numberOfBooks = numberOfBooks;
 	}
 
@@ -79,6 +92,4 @@ public class MemberCategory {
 	public String toString() {
 		return "MemberCategory [id=" + id + ", category=" + category + ", numberOfBooks=" + numberOfBooks + "]";
 	}
-	
-	
 }

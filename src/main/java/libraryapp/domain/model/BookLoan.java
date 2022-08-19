@@ -1,43 +1,39 @@
 package libraryapp.domain.model;
 
-import java.sql.Date;
+import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "book_loan")
 public class BookLoan {
-	
 	@Id
 	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "book_loan_sequence")
 	@SequenceGenerator(name = "book_loan_sequence", sequenceName = "book_loan_sequence", allocationSize = 1)
 	private Long id;
-	
-	@Column(name = "member_id")
-	private Long memberId;
-	
-	@Column(name = "book_copy_id")
-	private Long bookCopyId;
-	
+
+	@ManyToOne
+	@JoinColumn(name = "member_id", nullable = false)
+	private MemberAccount account;
+
+	@OneToOne
+	@JoinColumn(name = "book_copy_id", nullable = false)
+	private BookCopy bookCopy;
+
+	@Temporal(TemporalType.DATE)
 	@Column(name = "borrow_date")
 	private Date borrowDate;
 
+	@Temporal(TemporalType.DATE)
 	@Column(name = "due_date")
 	private Date dueDate;
 	
 	protected BookLoan() {/*required by JPA specifications*/}
 
 	public BookLoan(Long memberId, Long bookCopyId, Date borrowDate, Date dueDate) {
-		this.memberId = memberId;
-		this.bookCopyId = bookCopyId;
+		this.account = new MemberAccount(memberId);
+		this.bookCopy = new BookCopy(bookCopyId);
 		this.borrowDate = borrowDate;
 		this.dueDate = dueDate;
 	}
@@ -50,20 +46,20 @@ public class BookLoan {
 		this.id = id;
 	}
 
-	public Long getMemberId() {
-		return this.memberId;
+	public MemberAccount getAccount() {
+		return this.account;
 	}
 
-	public void setMemberId(Long memberId) {
-		this.memberId = memberId;
+	public void setAccount(MemberAccount account) {
+		this.account = account;
 	}
 
-	public Long getBookCopyId() {
-		return this.bookCopyId;
+	public BookCopy getBookCopy() {
+		return this.bookCopy;
 	}
 
-	public void setBookCopyId(Long bookCopyId) {
-		this.bookCopyId = bookCopyId;
+	public void setBookCopy(BookCopy bookCopy) {
+		this.bookCopy = bookCopy;
 	}
 
 	public Date getBorrowDate() {
@@ -109,7 +105,7 @@ public class BookLoan {
 
 	@Override
 	public String toString() {
-		return "BookLoan [id=" + id + ", member_id=" + memberId + ", book_copy_id=" + bookCopyId + ", borrow_date="
+		return "BookLoan [id=" + id + ", member_id=" + account + ", book_copy_id=" + bookCopy + ", borrow_date="
 				+ borrowDate + ", due_date=" + dueDate + "]";
 	}
 	

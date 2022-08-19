@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -12,24 +13,29 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "book_copy")
 public class BookCopy {
-
 	@Id
 	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "book_copy_sequence")
 	@SequenceGenerator(name = "book_copy_sequence", sequenceName = "book_copy_sequence", allocationSize = 1)
 	private Long id;
-	
-	@Column(name = "book_id")
-	private Long book_id;
+
+	@ManyToOne
+	@JoinColumn(name = "book_id", nullable = false)
+	private Book book;
 	
 	@Column(name = "barcode")
 	private String barcode;
 
-	protected BookCopy() {/*required by JPA specifications*/}
-	
-	public BookCopy(Long book_id, String barcode) {
-		super();
-		this.book_id = book_id;
+	// Required by JPA specifications
+	protected BookCopy() {
+	}
+
+	protected BookCopy(Long id) {
+		this.id = id;
+	}
+
+	public BookCopy(Long bookId, String barcode) {
+		this.book = new Book(bookId);
 		this.barcode = barcode;
 	}
 
@@ -41,12 +47,12 @@ public class BookCopy {
 		this.id = id;
 	}
 
-	public Long getBook_id() {
-		return this.book_id;
+	public Book getBook() {
+		return this.book;
 	}
 
-	public void setBook_id(Long book_id) {
-		this.book_id = book_id;
+	public void setBook(Book book) {
+		this.book = book;
 	}
 
 	public String getBarcode() {
@@ -84,7 +90,6 @@ public class BookCopy {
 
 	@Override
 	public String toString() {
-		return "BookCopy [id=" + id + ", book_id=" + book_id + ", barcode=" + barcode + "]";
+		return "BookCopy [id=" + id + ", book=" + book + ", barcode=" + barcode + "]";
 	}
-	
 }

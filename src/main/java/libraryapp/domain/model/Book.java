@@ -16,7 +16,6 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "book")
 public class Book {
-
 	@Id
 	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "book_sequence")
@@ -28,7 +27,7 @@ public class Book {
 	
 	@Column(name = "author")
 	private String author;
-	
+
 	@Column(name = "date_published")
 	private Date datePublished;
 	
@@ -43,6 +42,10 @@ public class Book {
 	private Isbn isbn;
 	
 	protected Book() {/*required by JPA specifications*/}
+
+	public Book(Long id) {
+		this.id = id;
+	}
 
 	public Book(String title, String author, Date datePublished, String category, Isbn isbn) {
 		this.title = title;
@@ -130,5 +133,4 @@ public class Book {
 		return "Book [id=" + id + ", title=" + title + ", author=" + author + ", date_published=" + datePublished
 				+ ", category=" + category + ", isbn=" + isbn + "]";
 	}
-	
 }
