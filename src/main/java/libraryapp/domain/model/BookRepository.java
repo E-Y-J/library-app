@@ -7,11 +7,13 @@ import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;
 
 public interface BookRepository extends Repository<Book, Long> {
-	@Query("FROM Book a WHERE a.id = :id")
-	Book findById(@Param("id") long id);
-	
-	@Query("FROM Book a WHERE a.title = :title")
-	Book findByTitle(@Param("title") String title);
+	Book findById(long id);
+
+	Book findByTitle(String title);
+
+	@Query("FROM Book b WHERE b.isbn.isbn10 = :isbn "
+			+ "OR b.isbn.isbn13 = :isbn")
+	Book findByIsbn( @Param("isbn") String isbn);
 
 	List<Book> findAll();
 	

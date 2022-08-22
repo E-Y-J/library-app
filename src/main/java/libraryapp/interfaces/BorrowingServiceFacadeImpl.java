@@ -15,15 +15,21 @@ public class BorrowingServiceFacadeImpl implements BorrowingServiceFacade {
 	private final MemberAccountRepository memberAccountRepository;
 	private final LoanPeriodRepository loanPeriodRepository;
 	private final BookLoanRepository bookLoanRepository;
+	private final BookRepository bookRepository;
+	private final BookReserveRepository bookReserveRepository;
 
 	public BorrowingServiceFacadeImpl(BookCopyRepository bookCopyRepository,
 									  MemberAccountRepository memberAccountRepository,
 									  LoanPeriodRepository loanPeriodRepository,
-									  BookLoanRepository bookLoanRepository) {
+									  BookLoanRepository bookLoanRepository,
+									  BookRepository bookRepository,
+									  BookReserveRepository bookReserveRepository) {
 		this.bookCopyRepository = bookCopyRepository;
 		this.memberAccountRepository = memberAccountRepository;
 		this.loanPeriodRepository = loanPeriodRepository;
 		this.bookLoanRepository = bookLoanRepository;
+		this.bookRepository = bookRepository;
+		this.bookReserveRepository = bookReserveRepository;
 	}
 
 	@Override
@@ -34,6 +40,21 @@ public class BorrowingServiceFacadeImpl implements BorrowingServiceFacade {
 		LoanPeriod memberLoanPeriod = loanPeriodRepository.findByMemberCategoryIdAndBookCategory(memberAccount.getCategory().getId(), book.getCategory());
 		Date borrowDate = DateUtils.today();
 		Date dueDate = DateUtils.todayPlus(memberLoanPeriod.getNumberOfDays());
+		Collection<BookLoan> databaseBookLoans = bookLoanRepository.findManyBookLoanByMember(memberAccount);
+		MemberCategory memberCategory = memberAccount.getCategory();
+
+		if(memberLoanPeriod.getNumberOfDays() == 0){
+			throw new RuntimeException("Member is not allowed to borrow this type of books");
+		}
+
+		for (BookLoan bl : databaseBookLoans) {
+			if(bl.getBookCopy().getBarcode().equals(barcode)){
+				throw new RuntimeException("Book has been borrowed");
+			}
+		}
+		if(databaseBookLoans.size() >= memberCategory.getNumberOfBooks()){
+			throw new RuntimeException("Maximum borrowed books allowed have been reached.");
+		}
 
 		BookLoan bookLoan = new BookLoan(memberAccount.getId(), bookCopy.getId(), borrowDate, dueDate);
 		bookLoanRepository.save(bookLoan);
@@ -53,8 +74,16 @@ public class BorrowingServiceFacadeImpl implements BorrowingServiceFacade {
 
 	@Override
 	public ReservationReceipt reserveBook(String isbn, String memberAccountId) {
-		// TODO Auto-generated method stub
-		return null;
+		MemberAccount memberAccount = memberAccountRepository.findByMemberId(memberAccountId);
+		Book book = bookRepository.findByIsbn(isbn);
+
+		System.out.println(book);
+
+		ReservationReceipt reservationReceipt = new ReservationReceipt(book.getTitle(), book.getIsbn().getIsbn13(), book.getIsbn().getIsbn10());
+		BookReserve bookReserve = new BookReserve(memberAccount, book);
+		bookReserveRepository.save(bookReserve);
+
+		return reservationReceipt;
 	}
 
 	@Override

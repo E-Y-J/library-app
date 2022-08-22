@@ -1,12 +1,6 @@
 package libraryapp.domain.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "loan_period")
@@ -16,7 +10,7 @@ public class LoanPeriod {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "loan_period_sequence")
 	@SequenceGenerator(name = "loan_period_sequence", sequenceName = "loan_period_sequence", allocationSize = 1)
 	private Long id;
-	
+
 	@Column(name = "member_category_id")
 	private Long memberCategoryId;
 	

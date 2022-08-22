@@ -12,7 +12,14 @@ public class Isbn {
 	private String isbn13;
 	
 	protected Isbn() {}
-	
+
+	public Isbn(String isbn) {
+		if(isbn.length() > 10) {
+			this.isbn13 = isbn;
+		} else {
+			this.isbn10 = isbn;
+		}
+	}
 	public Isbn(String isbn10, String isbn13) {
 		this.isbn10 = isbn10;
 		this.isbn13 = isbn13;

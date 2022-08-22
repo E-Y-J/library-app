@@ -1,17 +1,10 @@
 package libraryapp.domain.model;
 
 import java.sql.Date;
+import java.util.HashSet;
+import java.util.Set;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "book")
@@ -40,6 +33,10 @@ public class Book {
 		@AttributeOverride(name = "isbn13", column = @Column(name = "isbn13"))
 	})
 	private Isbn isbn;
+
+	@OneToMany(cascade = CascadeType.PERSIST)
+	@JoinColumn(name = "book_id", updatable = false, insertable = false)
+	private Set<BookReserve> bookReserves = new HashSet<BookReserve>();
 	
 	protected Book() {/*required by JPA specifications*/}
 

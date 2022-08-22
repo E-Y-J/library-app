@@ -27,6 +27,10 @@ public class MemberAccount {
 	@JoinColumn(name = "member_id", updatable = false, insertable = false)
 	private Set<BookLoan> bookLoans = new HashSet<BookLoan>();
 
+	@OneToMany(cascade = CascadeType.PERSIST)
+	@JoinColumn(name = "member_id", updatable = false, insertable = false)
+	private Set<BookReserve> bookReserves = new HashSet<BookReserve>();
+
 	// Required by JPA specifications
 	protected MemberAccount() {
 	}

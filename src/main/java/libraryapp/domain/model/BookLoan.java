@@ -13,6 +13,9 @@ public class BookLoan {
 	@SequenceGenerator(name = "book_loan_sequence", sequenceName = "book_loan_sequence", allocationSize = 1)
 	private Long id;
 
+	@Version
+	private long version;
+
 	@ManyToOne
 	@JoinColumn(name = "member_id", nullable = false)
 	private MemberAccount account;
