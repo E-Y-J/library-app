@@ -8,7 +8,6 @@ import java.util.Date;
  * returned.
  */
 public class BorrowReceipt {
-
 	private final String title;
 	private final String barcode;
 	private final Date borrowDate;
@@ -39,5 +38,4 @@ public class BorrowReceipt {
 	public Date getDueDate() {
 		return dueDate;
 	}
-
 }
