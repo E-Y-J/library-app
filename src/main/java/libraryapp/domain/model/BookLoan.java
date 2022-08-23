@@ -14,7 +14,7 @@ public class BookLoan {
 	private Long id;
 
 	@Version
-	private long version;
+	private Integer version;
 
 	@ManyToOne
 	@JoinColumn(name = "member_id", nullable = false)

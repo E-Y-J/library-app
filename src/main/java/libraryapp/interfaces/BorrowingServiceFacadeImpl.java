@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class BorrowingServiceFacadeImpl implements BorrowingServiceFacade {
-	private final Logger log = LoggerFactory.getLogger(this.getClass());
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private final BookCopyRepository bookCopyRepository;
 	private final MemberAccountRepository memberAccountRepository;
 	private final LoanPeriodRepository loanPeriodRepository;
@@ -41,7 +41,16 @@ public class BorrowingServiceFacadeImpl implements BorrowingServiceFacade {
 		Date borrowDate = DateUtils.today();
 		Date dueDate = DateUtils.todayPlus(memberLoanPeriod.getNumberOfDays());
 		Collection<BookLoan> databaseBookLoans = bookLoanRepository.findManyBookLoanByMember(memberAccount);
+		List<BookReserve> databaseBookReserve = bookReserveRepository.findManyBookReserveByBook(book);
 		MemberCategory memberCategory = memberAccount.getCategory();
+
+		if(!databaseBookReserve.isEmpty()){
+			if(!databaseBookReserve.get(0).getAccount().equals(memberAccount)){
+				throw new RuntimeException("Book was not reserved by this member");
+			} else if (databaseBookReserve.get(0).getAccount().equals(memberAccount)) {
+				bookReserveRepository.delete(databaseBookReserve.get(0));
+			}
+		}
 
 		if(memberLoanPeriod.getNumberOfDays() == 0){
 			throw new RuntimeException("Member is not allowed to borrow this type of books");
@@ -75,14 +84,19 @@ public class BorrowingServiceFacadeImpl implements BorrowingServiceFacade {
 	@Override
 	public ReservationReceipt reserveBook(String isbn, String memberAccountId) {
 		MemberAccount memberAccount = memberAccountRepository.findByMemberId(memberAccountId);
+		List<BookReserve> memberDatabaseBookReserves = bookReserveRepository.findManyBookReserveByMember(memberAccount);
 		Book book = bookRepository.findByIsbn(isbn);
 
-		System.out.println(book);
+		for(BookReserve br : memberDatabaseBookReserves){
+			if(br.getBook().equals(book)){
+				throw new RuntimeException("Book has already been reserved once");
+			}
+		}
 
-		ReservationReceipt reservationReceipt = new ReservationReceipt(book.getTitle(), book.getIsbn().getIsbn13(), book.getIsbn().getIsbn10());
 		BookReserve bookReserve = new BookReserve(memberAccount, book);
 		bookReserveRepository.save(bookReserve);
 
+		ReservationReceipt reservationReceipt = new ReservationReceipt(book.getTitle(), book.getIsbn().getIsbn13(), book.getIsbn().getIsbn10());
 		return reservationReceipt;
 	}
 
@@ -92,8 +106,6 @@ public class BorrowingServiceFacadeImpl implements BorrowingServiceFacade {
 		Collection<BookLoan> databaseBookLoans = bookLoanRepository.findManyBookLoanByMember(memberAccount);
 		Set<BookLoanStatus> bookLoans = new HashSet<BookLoanStatus>();
 
-		log.debug(databaseBookLoans.toString());
-
 		for (BookLoan loan: databaseBookLoans) {
 			String barcode = loan.getBookCopy().getBarcode();
 			Book book = loan.getBookCopy().getBook();
@@ -101,8 +113,6 @@ public class BorrowingServiceFacadeImpl implements BorrowingServiceFacade {
 			BookLoanStatus bookLoanStatus = new BookLoanStatus(title,barcode,loan.getBorrowDate(), loan.getDueDate());
 			bookLoans.add(bookLoanStatus);
 		}
-
-		log.debug(bookLoans.toString());
 
 		return bookLoans;
 	}

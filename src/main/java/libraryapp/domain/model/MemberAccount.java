@@ -49,6 +49,14 @@ public class MemberAccount {
 		this.category = category;
 	}
 
+	public Set<BookReserve> getBookReserves() {
+		return bookReserves;
+	}
+
+	public void setBookReserves(Set<BookReserve> bookReserves) {
+		this.bookReserves = bookReserves;
+	}
+
 	public Set<BookLoan> getBookLoans() {
 		return bookLoans;
 	}

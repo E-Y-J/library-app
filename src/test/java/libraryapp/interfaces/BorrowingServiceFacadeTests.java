@@ -12,15 +12,17 @@ import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceUnit;
+import javax.persistence.*;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -54,6 +56,8 @@ public class BorrowingServiceFacadeTests {
 	protected String johnAccountId; // department head
 	protected String sallyAccountId; // undergraduate student
 	protected String patAccountId; // graduate student
+
+	Logger logger = LoggerFactory.getLogger(BorrowingServiceFacadeTests.class);
 
 	@BeforeEach
 	void setUp() {
@@ -394,6 +398,8 @@ public class BorrowingServiceFacadeTests {
 		private final String memberAccountId;
 		private final BorrowingServiceFacade service;
 
+		private Logger logger = LoggerFactory.getLogger(this.getClass());
+
 		public BorrowBookCommand(
 				String barcode, String memberAccountId, BorrowingServiceFacade service) {
 			this.barcode = barcode;
@@ -402,12 +408,24 @@ public class BorrowingServiceFacadeTests {
 		}
 		
 		public void execute() {
-			service.borrowBook(barcode, memberAccountId);
+			try {
+				service.borrowBook(barcode, memberAccountId);
+			} catch (Exception e){
+				logger.warn("Bank account action failed", e);
+			}
 		}
 
 		@Override
 		public void run() {
-			execute();
+			boolean retry = false;
+			do {
+				try {
+					execute();
+					retry = false;
+				} catch (PersistenceException e ) {
+					retry = (e.getCause() instanceof OptimisticLockException);
+				}
+			} while (retry);
 		}
 	}
 
@@ -465,29 +483,29 @@ public class BorrowingServiceFacadeTests {
 						hasProperty("isbn10", equalTo("3125341477"))));
 
 		// Sally returns the borrowed copy
-//		service.returnBook(barcode, sallyAccountId);
+		service.returnBook(barcode, sallyAccountId);
 
 		// Pat cannot borrow it, since John has it reserved.
-//		try {
-//			service.borrowBook(barcode, patAccountId);
-//			fail("Pat should not be able to borrow, since John has it reserved");
-//		} catch (Exception e) {
-//			// expected, pass!
-//		}
+		try {
+			service.borrowBook(barcode, patAccountId);
+			fail("Pat should not be able to borrow, since John has it reserved");
+		} catch (Exception e) {
+			// expected, pass!
+		}
 
 		// John can now borrow, since he reserved it.
-//		service.borrowBook(barcode, johnAccountId);
+		service.borrowBook(barcode, johnAccountId);
 //
-//		service.returnBook(barcode, johnAccountId);
+		service.returnBook(barcode, johnAccountId);
 
 		// After John returns it, Pat can now borrow
 		// (since John's reservation has been satisfied).
-//		try {
-//			service.borrowBook(barcode, patAccountId);
-//		} catch (Exception e) {
-//			fail("Pat should be able to borrow, after John has returned the book."
-//					+ " If you add a reservation for John, have it removed when John gets to borrow the book.");
-//		}
+		try {
+			service.borrowBook(barcode, patAccountId);
+		} catch (Exception e) {
+			fail("Pat should be able to borrow, after John has returned the book."
+					+ " If you add a reservation for John, have it removed when John gets to borrow the book.");
+		}
 	}
 
 	@Test

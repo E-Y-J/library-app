@@ -48,6 +48,7 @@ CREATE TABLE book_loan (
 	book_copy_id BIGINT NOT NULL,
 	borrow_date DATE NOT NULL,
 	due_date DATE NOT NULL,
+	version INTEGER,
 	CONSTRAINT pk_book_loan_id PRIMARY KEY (id),
 	CONSTRAINT fk_member_id FOREIGN KEY (member_id) REFERENCES member_account,
 	CONSTRAINT fk_book_copy_id FOREIGN KEY (book_copy_id) REFERENCES book_copy,
