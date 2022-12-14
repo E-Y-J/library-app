@@ -1,8 +1,10 @@
 package libraryapp.domain.model;
 
+import java.lang.reflect.Member;
 import java.util.Date;
 
 import javax.persistence.*;
+import javax.transaction.Transactional;
 
 @Entity
 @Table(name = "book_loan")
@@ -12,9 +14,6 @@ public class BookLoan {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "book_loan_sequence")
 	@SequenceGenerator(name = "book_loan_sequence", sequenceName = "book_loan_sequence", allocationSize = 1)
 	private Long id;
-
-	@Version
-	private Integer version;
 
 	@ManyToOne
 	@JoinColumn(name = "member_id", nullable = false)
@@ -34,8 +33,8 @@ public class BookLoan {
 	
 	protected BookLoan() {/*required by JPA specifications*/}
 
-	public BookLoan(Long memberId, Long bookCopyId, Date borrowDate, Date dueDate) {
-		this.account = new MemberAccount(memberId);
+	public BookLoan(MemberAccount memberAccount, Long bookCopyId, Date borrowDate, Date dueDate) {
+		this.account = memberAccount;
 		this.bookCopy = new BookCopy(bookCopyId);
 		this.borrowDate = borrowDate;
 		this.dueDate = dueDate;

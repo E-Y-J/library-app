@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.Collection;
 
 public interface BookLoanRepository extends Repository<BookLoan, Long> {
+
     @Query("FROM BookLoan bl WHERE bl.account = :account")
     Collection<BookLoan> findManyBookLoanByMember(@Param("account")MemberAccount account);
 

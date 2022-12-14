@@ -6,7 +6,10 @@ import libraryapp.domain.model.*;
 import libraryapp.utils.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class BorrowingServiceFacadeImpl implements BorrowingServiceFacade {
@@ -33,6 +36,7 @@ public class BorrowingServiceFacadeImpl implements BorrowingServiceFacade {
 	}
 
 	@Override
+	@Transactional(isolation = Isolation.READ_COMMITTED)
 	public BorrowReceipt borrowBook(String barcode, String memberAccountId) {
 		MemberAccount memberAccount = memberAccountRepository.findByMemberId(memberAccountId);
 		BookCopy bookCopy = bookCopyRepository.findByBarcode(barcode);
@@ -65,7 +69,7 @@ public class BorrowingServiceFacadeImpl implements BorrowingServiceFacade {
 			throw new RuntimeException("Maximum borrowed books allowed have been reached.");
 		}
 
-		BookLoan bookLoan = new BookLoan(memberAccount.getId(), bookCopy.getId(), borrowDate, dueDate);
+		BookLoan bookLoan = new BookLoan(memberAccount, bookCopy.getId(), borrowDate, dueDate);
 		bookLoanRepository.save(bookLoan);
 
 		return new BorrowReceipt(bookCopy.getBook().getTitle(),

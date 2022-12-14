@@ -12,12 +12,18 @@ public class MemberAccount {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "member_sequence")
 	@SequenceGenerator(name = "member_sequence", sequenceName = "member_sequence", allocationSize = 1)
 	private Long id;
-	
+
+	@Version
+	private Long version;
+
 	@Column(name = "member_id")
 	private String memberId;
 	
 	@Column(name = "name")
 	private String name;
+
+	@Column(name = "borrowed_books")
+	private Integer borrowedBooks;
 
 	@ManyToOne
 	@JoinColumn(name = "category_id")
@@ -42,6 +48,7 @@ public class MemberAccount {
 	public MemberAccount(String memberId, String name, Long categoryId) {
 		this.memberId = memberId;
 		this.name = name;
+		this.borrowedBooks = 0;
 		this.category = new MemberCategory(categoryId);
 	}
 
@@ -95,6 +102,14 @@ public class MemberAccount {
 
 	public void setCategory(Long categoryId) {
 		this.category = new MemberCategory(categoryId);
+	}
+
+	public Integer getBorrowedBooks() {
+		return borrowedBooks;
+	}
+
+	public void increaseBorrowedBooks() {
+		this.borrowedBooks += 1;
 	}
 
 	@Override

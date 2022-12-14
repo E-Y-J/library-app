@@ -4,4 +4,5 @@ import org.springframework.data.repository.Repository;
 
 public interface MemberAccountRepository extends Repository<MemberAccount, Long> {
     MemberAccount findByMemberId(String memberId);
+    MemberAccount save(MemberAccount memberAccount);
 }

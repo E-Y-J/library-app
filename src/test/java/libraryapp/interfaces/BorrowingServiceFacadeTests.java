@@ -18,13 +18,17 @@ import java.util.concurrent.Executors;
 
 import javax.persistence.*;
 
+import org.hibernate.StaleStateException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
@@ -408,11 +412,7 @@ public class BorrowingServiceFacadeTests {
 		}
 		
 		public void execute() {
-			try {
-				service.borrowBook(barcode, memberAccountId);
-			} catch (Exception e){
-				logger.warn("Bank account action failed", e);
-			}
+			service.borrowBook(barcode, memberAccountId);
 		}
 
 		@Override
@@ -422,13 +422,14 @@ public class BorrowingServiceFacadeTests {
 				try {
 					execute();
 					retry = false;
-				} catch (PersistenceException e ) {
-					retry = (e.getCause() instanceof OptimisticLockException);
+				} catch (Exception e ) {
+					retry = (e.getCause() instanceof OptimisticLockingFailureException || e.getCause() instanceof StaleStateException || e.getCause() instanceof ObjectOptimisticLockingFailureException);
 				}
 			} while (retry);
 		}
 	}
 
+//	@Disabled
 	@Test
 	void preventConcurrentHacks() throws Exception {
 		// TODO Comment out line below and make test pass
